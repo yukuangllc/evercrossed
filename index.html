@@ -1,11 +1,581 @@
 <!doctype html>
-<html>
+<html lang="en">
 <head>
-  <meta charset="utf-8">
-  <title>Evercrossed Support</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Evercrossed — A Memory Machine for Chance Encounters</title>
+  <meta
+    name="description"
+    content="Evercrossed is a privacy-first app that helps you discover when you unknowingly crossed paths with someone before you ever met."
+  />
+  <style>
+    :root {
+      --bg: #0f172a;
+      --bg-soft: #111827;
+      --card: rgba(255, 255, 255, 0.06);
+      --text: #f8fafc;
+      --muted: #cbd5e1;
+      --line: rgba(255, 255, 255, 0.12);
+      --accent: #a78bfa;
+      --accent-2: #22d3ee;
+      --max: 1080px;
+      --radius: 20px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html, body {
+      margin: 0;
+      padding: 0;
+      background:
+        radial-gradient(circle at top left, rgba(167, 139, 250, 0.18), transparent 30%),
+        radial-gradient(circle at top right, rgba(34, 211, 238, 0.14), transparent 30%),
+        linear-gradient(180deg, #0b1020 0%, #111827 100%);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI",
+        Roboto, Helvetica, Arial, sans-serif;
+      line-height: 1.6;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    .container {
+      width: min(calc(100% - 32px), var(--max));
+      margin: 0 auto;
+    }
+
+    header {
+      position: sticky;
+      top: 0;
+      backdrop-filter: blur(14px);
+      background: rgba(11, 16, 32, 0.55);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+      z-index: 20;
+    }
+
+    .nav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      min-height: 68px;
+    }
+
+    .brand {
+      font-size: 1.05rem;
+      font-weight: 700;
+      letter-spacing: 0.2px;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 20px;
+      align-items: center;
+      color: var(--muted);
+      font-size: 0.95rem;
+    }
+
+    .nav-links a:hover {
+      color: var(--text);
+    }
+
+    .hero {
+      padding: 88px 0 56px;
+    }
+
+    .hero-wrap {
+      display: grid;
+      grid-template-columns: 1.15fr 0.85fr;
+      gap: 32px;
+      align-items: center;
+    }
+
+    .eyebrow {
+      display: inline-block;
+      padding: 8px 12px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      color: var(--muted);
+      font-size: 0.9rem;
+      background: rgba(255, 255, 255, 0.04);
+      margin-bottom: 18px;
+    }
+
+    h1 {
+      margin: 0 0 18px;
+      font-size: clamp(2.4rem, 6vw, 4.6rem);
+      line-height: 1.02;
+      letter-spacing: -0.04em;
+    }
+
+    .hero p {
+      margin: 0 0 18px;
+      color: var(--muted);
+      font-size: 1.06rem;
+      max-width: 700px;
+    }
+
+    .cta-row {
+      display: flex;
+      gap: 14px;
+      flex-wrap: wrap;
+      margin-top: 28px;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 13px 18px;
+      border-radius: 999px;
+      border: 1px solid var(--line);
+      font-weight: 600;
+      transition: 0.18s ease;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--accent), var(--accent-2));
+      color: #0b1020;
+      border: none;
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-1px);
+      filter: brightness(1.03);
+    }
+
+    .btn-secondary {
+      color: var(--text);
+      background: rgba(255, 255, 255, 0.04);
+    }
+
+    .btn-secondary:hover {
+      background: rgba(255, 255, 255, 0.08);
+    }
+
+    .phone-card {
+      border: 1px solid var(--line);
+      border-radius: 28px;
+      padding: 22px;
+      background: linear-gradient(180deg, rgba(255,255,255,0.07), rgba(255,255,255,0.04));
+      box-shadow: 0 20px 80px rgba(0,0,0,0.3);
+    }
+
+    .phone-screen {
+      border-radius: 22px;
+      overflow: hidden;
+      background:
+        radial-gradient(circle at top, rgba(167,139,250,0.25), transparent 30%),
+        linear-gradient(180deg, #1e293b, #0f172a);
+      min-height: 500px;
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .screen-top {
+      display: flex;
+      justify-content: space-between;
+      color: rgba(255,255,255,0.75);
+      font-size: 0.86rem;
+    }
+
+    .pill {
+      display: inline-block;
+      padding: 6px 10px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.1);
+      border: 1px solid rgba(255,255,255,0.12);
+      font-size: 0.85rem;
+      color: #e2e8f0;
+    }
+
+    .moment-card {
+      margin-top: 22px;
+      padding: 18px;
+      border-radius: 20px;
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.12);
+    }
+
+    .moment-title {
+      font-size: 1.1rem;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+
+    .moment-meta {
+      color: #cbd5e1;
+      font-size: 0.95rem;
+    }
+
+    .timeline {
+      margin-top: 18px;
+      display: grid;
+      gap: 12px;
+    }
+
+    .timeline-item {
+      padding: 14px;
+      border-radius: 16px;
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.1);
+      color: #e2e8f0;
+      font-size: 0.95rem;
+    }
+
+    section {
+      padding: 32px 0 12px;
+    }
+
+    .section-title {
+      font-size: 2rem;
+      letter-spacing: -0.03em;
+      margin: 0 0 10px;
+    }
+
+    .section-subtitle {
+      color: var(--muted);
+      margin: 0 0 28px;
+      max-width: 760px;
+    }
+
+    .grid-3 {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 18px;
+    }
+
+    .grid-2 {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 18px;
+    }
+
+    .card {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 22px;
+    }
+
+    .card h3 {
+      margin: 0 0 10px;
+      font-size: 1.1rem;
+    }
+
+    .card p {
+      margin: 0;
+      color: var(--muted);
+    }
+
+    .quote {
+      font-size: clamp(1.4rem, 3vw, 2.1rem);
+      line-height: 1.25;
+      letter-spacing: -0.03em;
+      margin: 0;
+      max-width: 900px;
+    }
+
+    .muted {
+      color: var(--muted);
+    }
+
+    footer {
+      padding: 48px 0 64px;
+      color: var(--muted);
+    }
+
+    .footer-box {
+      display: flex;
+      justify-content: space-between;
+      gap: 20px;
+      flex-wrap: wrap;
+      border-top: 1px solid var(--line);
+      padding-top: 22px;
+    }
+
+    .footer-links {
+      display: flex;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+
+    .footer-links a:hover {
+      color: var(--text);
+    }
+
+    @media (max-width: 900px) {
+      .hero-wrap,
+      .grid-3,
+      .grid-2 {
+        grid-template-columns: 1fr;
+      }
+
+      .hero {
+        padding-top: 64px;
+      }
+
+      .phone-screen {
+        min-height: 420px;
+      }
+
+      .nav-links {
+        gap: 14px;
+        font-size: 0.9rem;
+      }
+    }
+
+    @media (max-width: 560px) {
+      .nav {
+        min-height: 60px;
+      }
+
+      .nav-links {
+        display: none;
+      }
+
+      h1 {
+        font-size: 2.5rem;
+      }
+
+      .hero p,
+      .section-subtitle,
+      .card p {
+        font-size: 0.98rem;
+      }
+    }
+  </style>
 </head>
 <body>
-  <h1>Evercrossed Support</h1>
-  <p>For support, contact: yukuangllc@gmail.com</p>
+  <header>
+    <div class="container nav">
+      <a href="#" class="brand">Evercrossed</a>
+      <nav class="nav-links">
+        <a href="#how-it-works">How it works</a>
+        <a href="#privacy">Privacy</a>
+        <a href="support.html">Support</a>
+        <a href="privacy.html">Privacy Policy</a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div class="container hero-wrap">
+        <div>
+          <div class="eyebrow">A memory machine for chance encounters</div>
+          <h1>Discover the moment your paths first crossed.</h1>
+          <p>
+            Evercrossed helps you uncover the hidden moment you unknowingly crossed
+            paths with someone before you ever met.
+          </p>
+          <p>
+            Using photo metadata already stored on your device, Evercrossed turns
+            years of passive memories into something magical, emotional, and deeply shareable.
+          </p>
+          <div class="cta-row">
+            <a class="btn btn-primary" href="https://apps.apple.com/" target="_blank" rel="noopener noreferrer">
+              Download on the App Store
+            </a>
+            <a class="btn btn-secondary" href="#how-it-works">
+              See how it works
+            </a>
+          </div>
+        </div>
+
+        <div class="phone-card">
+          <div class="phone-screen">
+            <div>
+              <div class="screen-top">
+                <span class="pill">Evercrossed</span>
+                <span>Privacy-first</span>
+              </div>
+
+              <div class="moment-card">
+                <div class="moment-title">You crossed paths before you met.</div>
+                <div class="moment-meta">
+                  Pike Place Market · Seattle<br />
+                  August 14, 2021 · 4:37 PM
+                </div>
+              </div>
+
+              <div class="timeline">
+                <div class="timeline-item">You were 112 feet apart.</div>
+                <div class="timeline-item">Captured from photo metadata on-device.</div>
+                <div class="timeline-item">A hidden moment, finally revealed.</div>
+              </div>
+            </div>
+
+            <div class="muted" style="font-size: 0.9rem;">
+              Not a social feed. Not another chat app. Just a beautiful way to see that
+              life may have connected two people long before they ever said hello.
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <div class="container">
+        <p class="quote">
+          We move through each other’s lives more often than we realize.
+          Evercrossed exists to reveal those invisible intersections.
+        </p>
+      </div>
+    </section>
+
+    <section id="how-it-works">
+      <div class="container">
+        <h2 class="section-title">How it works</h2>
+        <p class="section-subtitle">
+          The experience is simple. The feeling is not.
+        </p>
+
+        <div class="grid-3">
+          <div class="card">
+            <h3>1. Scan your photo history</h3>
+            <p>
+              Evercrossed reads time and location metadata from your photo library
+              on your device to build a compact comparison profile.
+            </p>
+          </div>
+
+          <div class="card">
+            <h3>2. Compare with someone</h3>
+            <p>
+              Share and compare profiles to discover whether your lives overlapped
+              in the same place at the same time.
+            </p>
+          </div>
+
+          <div class="card">
+            <h3>3. Reveal the hidden moment</h3>
+            <p>
+              Experience the first crossing through a cinematic, emotional reveal
+              you can remember and share.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <div class="container">
+        <h2 class="section-title">Why people use Evercrossed</h2>
+        <p class="section-subtitle">
+          Because some of the most meaningful stories start before either person knew it.
+        </p>
+
+        <div class="grid-2">
+          <div class="card">
+            <h3>For couples</h3>
+            <p>
+              Find out whether you were already brushing past each other years before
+              your relationship began.
+            </p>
+          </div>
+
+          <div class="card">
+            <h3>For friends</h3>
+            <p>
+              Discover strange, beautiful overlaps in the cities, schools, trips,
+              and events that shaped your lives.
+            </p>
+          </div>
+
+          <div class="card">
+            <h3>For storytellers</h3>
+            <p>
+              Turn invisible data into a shareable memory that feels personal,
+              surprising, and made for the internet.
+            </p>
+          </div>
+
+          <div class="card">
+            <h3>For the curious</h3>
+            <p>
+              Sometimes the most unforgettable part is realizing how close two lives
+              came before they ever truly met.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="privacy">
+      <div class="container">
+        <h2 class="section-title">Built privacy-first</h2>
+        <p class="section-subtitle">
+          Evercrossed is designed around a simple principle: intimate moments should
+          not require invasive infrastructure.
+        </p>
+
+        <div class="grid-3">
+          <div class="card">
+            <h3>On-device by design</h3>
+            <p>
+              The app is built to work primarily with data already available on your device,
+              instead of depending on a large backend service.
+            </p>
+          </div>
+
+          <div class="card">
+            <h3>Metadata, not memories</h3>
+            <p>
+              Evercrossed focuses on photo metadata like time and location rather than
+              the image content itself for its core experience.
+            </p>
+          </div>
+
+          <div class="card">
+            <h3>Simple and lightweight</h3>
+            <p>
+              No bloated social graph, no endless feed, and no unnecessary complexity.
+              Just one beautiful idea, done carefully.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <div class="container">
+        <h2 class="section-title">A different kind of social app</h2>
+        <p class="section-subtitle">
+          Evercrossed is not about broadcasting your life. It is about discovering
+          the quiet ways life may have already connected it to someone else.
+        </p>
+
+        <div class="card">
+          <p style="margin: 0; color: var(--text); font-size: 1.05rem;">
+            In a world full of noise, Evercrossed makes room for a softer kind of magic:
+            the realization that two stories may have been intertwined long before either
+            person noticed.
+          </p>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="container footer-box">
+      <div>
+        <strong style="display:block; color: var(--text); margin-bottom: 6px;">Evercrossed</strong>
+        <span>A privacy-first app for uncovering hidden crossings in your photo history.</span>
+      </div>
+
+      <div class="footer-links">
+        <a href="support.html">Support</a>
+        <a href="privacy.html">Privacy Policy</a>
+        <a href="mailto:yukuangllc@gmail.com">Contact</a>
+      </div>
+    </div>
+  </footer>
 </body>
 </html>
